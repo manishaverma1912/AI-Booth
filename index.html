@@ -1,0 +1,1419 @@
+ <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Photo Booth — Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+<style>
+  
+  @media (max-width: 560px) {
+  .hero-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    gap: 0.6rem !important;
+  }
+
+  .hero-actions a,
+  .hero-actions .btn {
+    flex: 1 1 auto !important;
+    width: 48% !important;   /* two buttons in one row */
+    text-align: center !important;
+    white-space: nowrap;
+  }
+
+
+ .stats {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important; /* 4 items in one row */
+    text-align: center !important;
+    gap: 0.6rem !important;
+  }
+
+  .stats > div {
+    padding: 0.4rem 0 !important;
+  }
+
+  .stats .num {
+    font-size: 1.1rem !important;
+  }
+
+  .stats .label {
+    font-size: 0.75rem !important;
+  }
+
+
+
+  .feature-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* 2 buttons per row */
+    gap: 15px !important;
+  }
+
+  .feature-buttons > div {
+    width: 100% !important;
+    text-align: center;
+    min-width: unset !important; /* remove the 180px that was breaking layout */
+  }
+
+@media (max-width: 560px) {
+  .trusted .row {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    justify-items: center !important;
+    gap: 1.2rem !important;
+  }
+
+  .trusted strong {
+    grid-column: 1 / -1 !important;
+    text-align: center;
+    margin-bottom: .5rem;
+  }
+
+  .trusted picture img {
+    max-width: 90px !important;
+    width: 100%;
+    height: auto;
+  }
+
+  /* 1st row: 3 logos */
+  .trusted picture:nth-of-type(1) { grid-column: 1; }
+  .trusted picture:nth-of-type(2) { grid-column: 2; }
+  .trusted picture:nth-of-type(3) { grid-column: 3; }
+
+  /* 2nd row: staggered between gaps */
+  .trusted picture:nth-of-type(4) {
+    grid-column: 1 / span 2;
+    justify-self: center;
+  }
+
+  .trusted picture:nth-of-type(5) {
+    grid-column: 2 / span 2;
+    justify-self: center;
+    margin-top: -142px;
+  }
+}
+
+
+
+ .site-footer .footer-col h4 {
+    text-align: left !important;
+    width: 100%;
+    margin: 0 auto 0.5rem auto;
+    font-size: 20px;
+  }
+
+
+
+}
+
+
+
+/* MOBILE ONLY: keeps hero buttons in one fixed spot under the content */
+@media (max-width: 768px) {
+  /* Make the left column a positioning context and reserve space for the buttons.
+     Increase min-height / padding-bottom if you want the buttons lower. */
+  #left-wrapper {
+    position: relative !important;
+    min-height: 350px;      /* <-- adjust this if needed (higher = more gap above buttons) */
+    box-sizing: border-box;
+  
+  }
+
+  /* Pin the button row inside the #left-wrapper */
+  #hero-actions {
+    position: absolute !important;
+    bottom: 20px;                /* distance from bottom of #left-wrapper */
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);    /* keep some side padding */
+    max-width: 420px;            /* limit how wide the row grows */
+    display: flex !important;
+    gap: 8px !important;
+    z-index: 50;                 /* appear above other elements */
+    pointer-events: auto;
+  }
+
+  /* Make buttons equal sized and responsive */
+  #hero-actions .btn {
+    flex: 1 1 0;
+    max-width: 180px;   /* limits single-button width */
+    min-width: 120px;   /* keeps tap target big enough */
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* DESKTOP ONLY: fix buttons under content */
+@media (min-width: 769px) {
+
+  /* left content must have fixed space so buttons don't move */
+  #left-wrapper {
+    position: relative;
+    min-height: 420px;       /* adjust if needed */
+    padding-bottom: 130px;   /* space for fixed-position buttons */
+    box-sizing: border-box;
+  }
+
+  /* Fix button row at a stable position */
+  #hero-actions {
+    position: absolute;
+    bottom: 30px;           /* distance from bottom of content */
+    left: 0;
+    width: 100%;
+    display: flex;
+    gap: 14px;
+    justify-content: flex-start; /* match your design */
+  }
+
+  /* Desktop button styles remain normal */
+  #hero-actions .btn {
+    width: auto;
+    padding: 14px 28px;
+    text-align: center;
+  }
+}
+
+
+
+
+
+
+
+
+/* mobile only */
+@media (max-width: 768px) {
+
+  /* hide desktop nav on mobile */
+  nav[aria-label="primary"] { display: none; }
+
+  /* menu toggle button - keep it visible */
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    padding: 8px;
+    cursor: pointer;
+    z-index: 60;
+  }
+
+  /* panel overlay (covers full viewport to detect outside clicks) */
+  .menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+    z-index: 50;
+  }
+  .menu-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* menu panel: we will size & position it with JS so it matches .container width/left */
+  .menu-panel {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 320px;                 /* fallback width, JS will override to match .container */
+    max-width: 90vw;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    transform: translateX(-110%); /* hidden by default (offscreen to left) */
+    transition: transform .32s cubic-bezier(.2,.9,.25,1);
+    overflow-y: auto;
+    z-index: 55;
+    border-radius: 6px;
+  }
+  .menu-panel.show {
+    transform: translateX(0);
+  }
+
+  /* inner links */
+  .menu-panel a {
+    display:block;
+    padding:14px 18px;
+    color:#222;
+    text-decoration:none;
+    border-bottom:1px solid rgba(0,0,0,0.05);
+    font-weight:500;
+  }
+  .menu-panel a:hover { background:#fafafa; }
+
+  /* small close button top-right of the panel */
+  .menu-panel .close-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    background: transparent;
+    border: 0;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  /* ensure header container stays highest so panel sits visually inside content width */
+  header .container.nav { position: relative; z-index: 60; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+
+
+</head>
+<body>
+
+  <!-- Top info bar -->
+  <div class="topbar">
+    <div class="container row">
+      <div class="left" style="display:flex; gap:.6rem; align-items:center;">
+        <!-- optional left area kept for future -->
+      </div>
+      <div class="right">
+        <div class="chip">+9090 8080 4044</div>
+        <div class="chip">ABC@example.com</div>
+        <!-- <a class="btn" href="#demo">TRY DEMO</a> -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+  <!-- Main nav -->
+  <header>
+    <div class="container nav">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a class="brand" href="#"><span class="logon" aria-hidden="true">
+            <picture>
+                <!-- <img src="icons/ssssss.png"  > -->
+                <img src="icons/white logo.png" alt="Logo" style="background:none; height:50px;">
+
+            </picture>
+        </span>Swaparichay Studios</a>
+      </div>
+
+      
+      <!-- desktop nav -->
+      <nav aria-label="primary"  >
+        <ul id="primary-nav">
+          <li><a href="#home">HOME</a></li>
+          <li><a href="#solutions">SOLUTIONS</a></li>
+          <li class="dropdown">
+            <a href="#gallery" aria-haspopup="true" aria-expanded="false">CUSTOM AI THEME ▾</a>
+            <ul>
+              <li><a href="#headshots">AI Headshots</a></li>
+              <li><a href="#superhero">AI Superhero</a></li>
+              <li><a href="#timemachine">AI Time Machine</a></li>
+            </ul>
+          </li>
+
+          <li><a href="#gallery">AI BOOTH GALLERY</a></li>
+          <li><a href="#contact">CONTACT US</a></li>
+        </ul>
+      </nav>
+
+
+      <!-- mobile menu button -->
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg> 
+      </button>
+
+      <!-- mobile menu panel -->
+      <div class="menu-panel" id="menu-panel" aria-hidden="true">
+        <a href="#home">Home</a>
+        <a href="#solutions">Solutions</a>
+        <a href="#headshots">AI Headshots</a>
+        <a href="#superhero">AI Superhero</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+      </div>
+
+    </div>
+  </header>
+  
+  
+  <!-- Hero -->
+   
+  
+  <section id="home" class="hero">
+    <div class="container hero-wrap">
+      <div>
+        <!-- LEFT COLUMN wrapped in left-content so it can animate staggered -->
+        <div id="left-wrapper" class="left-content">
+          <div id="hero-eyebrow" class="eyebrow">Bring Magic To Moments</div>
+          <h1 id="hero-title">AI Photo Booth For <span id="hero-highlight" style="color:var(--brand-dark)">Every Occasion</span></h1>
+          <p id="hero-lead" class="lead">Turn big ideas into real impact. Our AI solutions are built to learn faster, perform better, and deliver results you can see.</p>
+
+          <div id="hero-actions" class="hero-actions">
+            <a id="hero-cta" class="btn" href="#contact">BOOK YOUR BOOTH</a>
+            <!-- <a id="hero-secondary" href="#demo" style="
+                background: linear-gradient(90deg, #5a00ff, #a800ff);
+                color: #fff;
+                padding: 14px 34px;
+                border-radius: 35px;
+                font-size: 16px;
+                font-weight: 700;
+                text-decoration: none;
+                box-shadow: 0 6px 16px rgba(90, 0, 255, 0.3);
+                transition: all 0.3s ease;
+              ">TRY IT NOW</a> -->
+               <a id="hero-cta" class="btn" href=#demo">TRY IT NOW</a>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: carousel slides (each image will get classes to animate) -->
+      <div class="hero-card">
+        <div class="carousel" aria-roledescription="carousel" aria-label="Hero slides" tabindex="0">
+          <div class="carousel-track" role="list">
+            <picture role="listitem" class="carousel-slide"
+                     data-eyebrow="Birthday Booth"
+                     data-title="Make Birthdays Unforgettable"
+                     data-highlight="Fun Portraits"
+                     data-lead="Create silly, charming, or cinematic portraits with instant AI styling — perfect for birthday parties."
+                     data-cta-text="Book Birthday"
+                     data-cta-href="#birthday">
+              <img src="assets/images/image 20 (6).svg" alt="AI Photo framed card 1">
+            </picture>
+
+            <picture role="listitem" class="carousel-slide"
+                     data-eyebrow="Corporate Events"
+                     data-title="Professional Photo Experiences"
+                     data-highlight="Brand Ready"
+                     data-lead="Set up a branded photo booth for conferences and corporate events with on-theme backdrops and logos."
+                     data-cta-text="Book Corporate"
+                     data-cta-href="#corporate">
+              <img src="assets/images/image 32.svg" alt="AI Photo framed card 2">
+            </picture>
+
+            <picture role="listitem" class="carousel-slide"
+                     data-eyebrow="Weddings & Parties"
+                     data-title="Memories That Last"
+                     data-highlight="Cinematic Style"
+                     data-lead="Capture emotional, magazine-style portraits with instant retouching and keepsake prints."
+                     data-cta-text="Book Weddings"
+                     data-cta-href="#weddings">
+              <img src="assets/images/image 33.svg" alt="AI Photo framed card 3">
+            </picture>
+          </div>
+
+          <div class="carousel-dots" role="tablist" aria-label="Slide navigation">
+            <button class="dot active" data-index="0" aria-label="Slide 1" role="tab" aria-selected="true"></button>
+            <button class="dot" data-index="1" aria-label="Slide 2" role="tab" aria-selected="false"></button>
+            <button class="dot" data-index="2" aria-label="Slide 3" role="tab" aria-selected="false"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Benefits -->
+  <section>
+    <div class="container">
+      <div class="section-title">
+        <h2>Why Choose Our <span style="color:var(--brand-dark)">AI Photo Booth</span></h2>
+      </div>
+
+      <div class="cards" style="display:flex; justify-content:center; flex-wrap:wrap; gap:30px; margin-top:1rem;">
+        <!-- Card 1 -->
+        <article class="card" style="background:#fff; box-shadow:0 5px 15px rgba(0,0,0,0.1); border-radius:10px; padding:25px 20px; max-width:330px; flex:1 1 300px; transition:transform 0.3s ease;">
+          <picture>
+            <img src="assets/images/image 21.svg" alt="Enhance icon" style="width:80px;height:80px;margin-bottom:20px;">
+          </picture>
+          <h3 style="font-size:18px;font-weight:600;margin-bottom:10px;">Instant AI Enhancements</h3>
+          <p style="font-size:15px;color:#333;line-height:1.6;margin-bottom:15px;">Guests get stunning, stylized portraits in just seconds, perfectly optimized for sharing.</p>
+          <a class="read" href="#" style="color:#2a00ff;font-weight:600;text-decoration:none;">READ MORE</a>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="card" style="background:#fff; box-shadow:0 5px 15px rgba(0,0,0,0.1); border-radius:10px; padding:25px 20px; max-width:330px; flex:1 1 300px; transition:transform 0.3s ease;">
+          <picture>
+            <img src="assets/images/image 20.svg" alt="Branding icon" style="width:80px;height:80px;margin-bottom:20px;">
+          </picture>
+          <h3 style="font-size:18px;font-weight:600;margin-bottom:10px;">Custom Branding & Themes</h3>
+          <p style="font-size:15px;color:#333;line-height:1.6;margin-bottom:15px;">Personalize filters, frames, and overlays to fully reflect your event’s unique identity.</p>
+          <a class="read" href="#" style="color:#2a00ff;font-weight:600;text-decoration:none;">READ MORE</a>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card" style="background:#fff; box-shadow:0 5px 15px rgba(0,0,0,0.1); border-radius:10px; padding:25px 20px; max-width:330px; flex:1 1 300px; transition:transform 0.3s ease;">
+          <picture>
+            <img src="assets/images/image 22.svg" alt="Security icon" style="width:80px;height:80px;margin-bottom:20px;">
+          </picture>
+          <h3 style="font-size:18px;font-weight:600;margin-bottom:10px;">Secure & Private</h3>
+          <p style="font-size:15px;color:#333;line-height:1.6;margin-bottom:15px;">Keep all images safe and confidential with full privacy and zero third-party access.</p>
+          <a class="read" href="#" style="color:#2a00ff;font-weight:600;text-decoration:none;">READ MORE</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trusted strip -->
+  <section>
+    <div class="trusted">
+      <div class="container row" style="display:flex; align-items:center; justify-content:center; gap:1.5rem; flex-wrap:wrap; ">
+        <strong style="font-size:20px; text-align:center">Trusted By Premier Companies Across India</strong>
+        <picture><img src="assets/images/image 26.svg" alt="Logo 1" style="width:120px; height:auto; filter:grayscale(0);"></picture>
+        <picture><img src="assets/images/image 27.svg" alt="Logo 2" style="width:120px; height:auto; filter:grayscale(0);"></picture>
+        <picture><img src="assets/images/image 28.svg" alt="Logo 3" style="width:120px; height:auto; filter:grayscale(0);"></picture>
+        <picture><img src="assets/images/image 29.svg" alt="Logo 4" style="width:120px; height:auto; filter:grayscale(0);"></picture>
+        <picture><img src="assets/images/image 30.svg" alt="Logo 5" style="width:120px; height:auto; filter:grayscale(0);"></picture>
+      </div>
+    </div>
+  </section>
+
+  <!-- About + stats -->
+  <section>
+    <div class="container split">
+      <div class="photo-stack">
+        <div class="back"></div>
+        <picture>
+          <img src="assets/images/image 31.svg" alt="Guests posing in photo booth">
+        </picture>
+      </div>
+      <div>
+        <span class="badge">ABOUT US</span>
+        <h2>Creating Memories, One <span style="color:var(--brand-dark)">Click At A Time</span></h2>
+        <p>We are a team passionate about turning ordinary events into unforgettable experiences. Our AI Photo Booth combines cutting-edge technology with fun, creating stunning, shareable moments for weddings, parties, corporate events, and more.</p>
+        <p>From capturing smiles to adding instant AI enhancements, we make sure every memory shines. With us, your guests don’t just take photos — they take home an experience.</p>
+        <ul>
+          <li>Design and develop custom AI solutions.</li>
+          <li>Implement scalable AI technologies.</li>
+          <li>Provide expert AI consulting and strategy.</li>
+          <li>Offer hands-on AI training and education.</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:3rem">
+      <div class="stats">
+        <div><div class="num">30K +</div><div class="label">Photo Edited</div></div>
+        <div><div class="num">210 +</div><div class="label">AI Filters</div></div>
+        <div><div class="num">54K +</div><div class="label">Active Users</div></div>
+        <div><div class="num">65K +</div><div class="label">Photo Designs</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature banner (kept inline styles but responsive from global CSS) -->
+  <section style="position: relative; display: flex; justify-content: center; align-items: center; flex-direction: column; background-image: url('assets/images/Frame 3.svg'); background-size: 100% auto; background-repeat: no-repeat; background-position: center; text-align: center; color: white; font-family: 'Poppins', sans-serif; padding: 40px 20px; min-height: 420px; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; backdrop-filter: blur(6px); background: rgba(0, 0, 60, 0.45); z-index: 1;"></div>
+    <div style="position: relative; z-index: 2; max-width: 900px; margin: 0 auto;">
+      <h2 style="font-size: 36px; font-weight: 700; line-height: 1.3; margin-bottom: 25px;">Next-Gen Photo Booths That Think,<br>React, And Wow!</h2>
+      <div style="display:flex; justify-content:center; align-items:center; gap:30px; margin-bottom:30px;">
+        <img src="assets/images/image 20 (5).svg" alt="AI Icon 1" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.3);">
+        <img src="assets/images/image 21 (2).svg" alt="AI Icon 2" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid rgba(255,255,255,0.3);">
+      </div>
+      <div style="margin-bottom:40px;">
+        <p style="margin:10px 0; font-size:16px; line-height:1.6;">It becomes evident that AI photo booths can transform any event with real-time filters, backgrounds, and instant sharing to keep guests engaged.</p>
+        <p style="margin:10px 0; font-size:16px; line-height:1.6;">Regardless of the event’s type, a lot of intelligent image processing is required to deliver stunning, personalized photos instantly.</p>
+      </div>
+      <div  class="feature-buttons" style="display:flex; justify-content:center; flex-wrap:wrap; gap:15px;">
+        <div style="background:#2a00ff; color:white; padding:15px 25px; border-radius:30px; font-size:15px; font-weight:600; min-width:180px;">Smart Filters<br><small style="font-weight:400;">Enhance Every Shot</small></div>
+        <div style="background:#2a00ff; color:white; padding:15px 25px; border-radius:30px; font-size:15px; font-weight:600; min-width:180px;">Face Detection<br><small style="font-weight:400;">Perfect Framing</small></div>
+        <div style="background:#2a00ff; color:white; padding:15px 25px; border-radius:30px; font-size:15px; font-weight:600; min-width:180px;">Background AI<br><small style="font-weight:400;">BG Replacement</small></div>
+        <div style="background:#2a00ff; color:white; padding:15px 25px; border-radius:30px; font-size:15px; font-weight:600; min-width:180px;">Instant Sharing<br><small style="font-weight:400;">Social-Ready Photos</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solutions (kept your refined section) -->
+
+
+<!-- Solutions (final refined — title styled to match your reference image) -->
+<section id="solutions" style="background:#fff;">
+  <style>
+    /* Container */
+    #solutions .container { max-width:1120px; margin:0 auto; padding:3.5rem 1rem; box-sizing:border-box; }
+
+    /* Title area — left aligned, small gap, badge with darker shadow */
+    #solutions .section-title {
+      display:flex;
+      flex-direction:column;
+      gap:20px;                 /* small gap between badge and heading */
+      align-items:center;
+      margin-bottom:1.25rem;
+      margin-top: 30px;
+    }
+    #solutions .badge {
+      display:inline-block;
+      background:#fff;
+      padding:.42rem .9rem;
+      border-radius:999px;
+      font-weight:700;
+      font-size:.78rem;
+      letter-spacing:.4px;
+      box-shadow:0 10px 22px rgba(0,0,0,0.22); /* darker blackish shadow */
+      border:1px solid rgba(0,0,0,0.04);
+    }
+
+    /* Heading: large, split across two lines with brand color on the second */
+    #solutions h2 {
+      margin:0;
+      font-size:2.1rem;       /* larger to match reference */
+      line-height:1.02;
+      font-weight:800;
+      color:#111;
+      text-align:center;
+    }
+    #solutions h2 span { color:var(--brand-dark,#2b33a8); } /* brand highlight */
+
+    /* Solutions grid */
+    #solutions .solutions {
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:24px;
+      margin-top:1rem;
+      align-items:start;
+    }
+
+    /* Card style */
+    #solutions .solution {
+      background:#fff;
+      border-radius:12px;
+      padding:28px 20px;
+      text-align:center;
+      box-shadow:0 10px 26px rgba(15,12,40,0.04);
+      border:2px solid rgba(98,48,217,0.08); /* subtle purple stroke */
+      transition:transform .28s cubic-bezier(.2,.9,.27,1), box-shadow .28s;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-height:210px;
+    }
+    /* Icon area */
+    #solutions .solution .thumb {
+      width:72px;
+      height:72px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:50%;
+      background:transparent;
+      box-shadow:none;
+      overflow:hidden;
+    }
+
+    #solutions .solution .thumb picture,
+    #solutions .solution .thumb img {
+      width:60px;
+      height:60px;
+      object-fit:contain;
+      display:block;
+      background:none;
+      filter:drop-shadow(0 2px 6px rgba(0,0,0,0.1));
+    }
+
+    /* Headings & copy */
+    #solutions .solution h3 { margin:0; font-size:1.05rem; font-weight:800; color:#111; }
+    #solutions .solution p { margin:0; color:#666; font-size:.95rem; line-height:1.5; }
+
+    /* Hover */
+    #solutions .solution:hover { transform:translateY(-8px); box-shadow:0 18px 44px rgba(15,12,40,0.09); }
+
+    /* Responsive */
+    @media (max-width:1000px) {
+      #solutions .solutions { grid-template-columns:repeat(2, 1fr); }
+    }
+    @media (max-width:560px) {
+      #solutions .container { padding:2rem 1rem; }
+      #solutions .solutions { grid-template-columns:1fr; gap:18px; }
+      #solutions h2 { font-size:1.6rem; }
+      /* make cards a touch taller on very small screens for breathing room */
+      #solutions .solution { min-height:240px; padding:22px; }
+    }
+  </style>
+
+  <div class="container">
+    <div class="solutions">
+
+      <div class="section-title">
+        <span class="badge">OUR POWERFUL SOLUTIONS</span>
+        <h2>What Solutions We<br><span>Best Offer</span></h2>
+      </div>
+
+      <article class="solution">
+        <div class="thumb"><picture><img src="assets/images/image 20 (3).svg" alt="AI Photobooth"></picture></div>
+        <h3>AI Photobooth</h3>
+        <p>Diversify what you would bring to the table if you were hired.</p>
+      </article>
+
+      <article class="solution">
+        <div class="thumb"><picture><img src="assets/images/image 21 (1).svg" alt="AI Personalized Invites"></picture></div>
+        <h3>AI Personalized Invites</h3>
+        <p>Level the playing field — high-touch client engagement that keeps them in the loop.</p>
+      </article>
+
+      <article class="solution">
+        <div class="thumb"><picture><img src="assets/images/image 22 (1).svg" alt="AI Video Booth & Face Swap"></picture></div>
+        <h3>AI Video Booth & Face Swap</h3>
+        <p>Personal development polishing, so commitment to the cause draft.</p>
+      </article>
+
+      <article class="solution">
+        <div class="thumb"><picture><img src="assets/images/image 23.svg" alt="AI For Retail & Fashion"></picture></div>
+        <h3>AI For Retail & Fashion</h3>
+        <p>Future-proof retail experiences that stand out for modern customers.</p>
+      </article>
+
+      <article class="solution">
+        <div class="thumb"><picture><img src="assets/images/image 24.svg" alt="Custom AI Solutions"></picture></div>
+        <h3>Custom AI Solutions</h3>
+        <p>Socialize communications with a wider stakeholder community and scale impact.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+  <!-- Portfolio (kept layout, made responsive via global rules) -->
+<!-- ====== Portfolio: 6-slide looping carousel + preview modal ====== -->
+<style>
+/* ---------- Portfolio carousel styles ---------- */
+.portfolio-wrap { background:#fff; padding:1.2rem 0; }
+.portfolio-inner { max-width:1200px; margin:0 auto; padding:3rem 2.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.08); box-sizing:border-box; }
+.portfolio-head { text-align:center; display:flex; flex-direction:column; align-items:center; gap:15px; }
+
+.portfolio-carousel { position:relative; margin-top:1.25rem; overflow:hidden; }
+.carousel-track { display:flex; gap:22px; transition: transform .6s cubic-bezier(.2,.9,.2,.98); will-change: transform; padding:22px 8px; }
+.slide { flex:0 0 calc((100% - 44px) / 3); max-width: calc((100% - 44px) / 3); box-sizing:border-box; border-radius:12px; overflow:hidden; background:#fff; position:relative; box-shadow:0 12px 28px rgba(0,0,0,0.10); }
+.slide picture { display:block; width:100%; height:260px; overflow:hidden; }
+.slide img { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* Title overlay */
+.slide .card-title { text-align:center; padding:18px 12px; font-weight:800; font-size:1.15rem; color:var(--brand-dark); }
+
+/* preview button overlay */
+.slide .preview-btn {
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  border-radius:30px;
+  padding:12px 28px;
+  font-weight:800;
+  box-shadow:0 10px 24px rgba(0,0,0,0.14);
+  cursor:pointer;
+  border:0;
+  display:inline-flex;
+  align-items:center;
+  gap:.6rem;
+  z-index:8;
+  opacity:0;
+  transition:opacity .18s ease, transform .18s ease;
+}
+.slide:hover .preview-btn { opacity:1; transform:translate(-50%,-50%) scale(1.02); }
+
+/* dots */
+.carousel-controls { display:flex; justify-content:center; gap:.5rem; margin-top:14px; align-items:center; }
+.dot { width:10px; height:10px; border-radius:50%; background:#d3d3d3; border:0; cursor:pointer; }
+.dot.active { background:var(--brand-dark); }
+
+/* responsive: 2 cards mid, 1 on small */
+@media (max-width:1000px){
+  .slide { flex:0 0 calc((100% - 22px) / 2); max-width: calc((100% - 22px) / 2); }
+}
+@media (max-width:640px){
+  .slide { flex:0 0 100%; max-width:100%; }
+  .carousel-track { padding:12px 6px; }
+}
+
+/* Modal */
+.modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:9999; padding:16px; }
+.modal { width:min(980px, 96vw); background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,0.5); }
+.modal .modal-head { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; background:#f7f7fb; }
+.modal h3{ margin:0; font-size:1.05rem; }
+.modal .close-btn { background:transparent; border:0; font-size:18px; cursor:pointer; padding:6px 10px; }
+.modal .modal-body { padding:0; }
+
+/* video styling */
+.modal video, .modal iframe { width:100%; height:520px; display:block; border:0; background:#000; }
+@media (max-width:720px){ .modal video, .modal iframe { height:320px; } }
+</style>
+
+
+
+<div class="portfolio-wrap">
+  <div class="portfolio-inner">
+    <div class="portfolio-head">
+      <span style="display:inline-block; background:#fff; padding:.42rem .9rem; border-radius:999px; font-weight:700; font-size:.78rem; letter-spacing:.4px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 10px 24px rgba(0,0,0,0.28);">OUR PORTFOLIO</span>
+      <h2 style="margin:0; font-size:2rem; line-height:1.06; font-weight:800;">AI in Action</h2>
+      <p style="margin:0; color:#666; max-width:900px; line-height:1.6;">Bringing smiles and unforgettable moments to life through AI-powered experiences.</p>
+    </div>
+
+    <!-- CAROUSEL -->
+    <div class="portfolio-carousel" aria-roledescription="carousel" aria-label="Portfolio carousel">
+      <div class="carousel-track" id="portfolioTrack" aria-live="off">
+        <!-- 6 real slides (these will be used and looped) -->
+
+        
+       <div class="slide" data-video="https://www.youtube.com/embed/R6DbN0K5I0Y?autoplay=1&rel=0" role="group" aria-label="Portfolio slide 1">
+  <picture><img src="assets/images/image 32.svg" alt="Asian Paints Excelerate Tech Meet"></picture>
+  <button class="preview-btn" type="button" aria-haspopup="dialog">PREVIEW</button>
+  <div class="card-title">Asian Paints Excelerate Tech Meet</div>
+</div>
+
+        <div class="slide" data-video="https://www.youtube.com/embed/JxMa3t3XDts?autoplay=1&rel=0" role="group" aria-label="Portfolio slide 2">
+          <picture><img src="assets/images/image 33.svg" alt="Amazon Pay Tropi Fam"></picture>
+          <button class="preview-btn" type="button" aria-haspopup="dialog">PREVIEW</button>
+          <div class="card-title">Amazon Pay Tropi Fam</div>
+        </div>
+        
+
+        <div class="slide" data-video="https://www.youtube.com/embed/mGnZfRd39gU?autoplay=1&rel=0" role="group" aria-label="Portfolio slide 3">
+          <picture><img src="assets/images/image 34.svg" alt="Aamchi Land Jaipur"></picture>
+          <button class="preview-btn" type="button" aria-haspopup="dialog">PREVIEW</button>
+          <div class="card-title">Aamchi Land Jaipur</div>
+        </div>
+
+
+        <div class="slide" data-video="https://www.youtube.com/embed/DgHgbw8jIAk?autoplay=1&rel=0" role="group" aria-label="Portfolio slide 4">
+          <picture><img src="assets/images/image 35.svg" alt="Project 4"></picture>
+          <button class="preview-btn" type="button" aria-haspopup="dialog">PREVIEW</button>
+          <div class="card-title">Campaign Spotlight</div>
+        </div>
+
+
+        <div class="slide" data-video="https://www.youtube.com/embed/c1DmliD8bow?autoplay=1&rel=0" role="group" aria-label="Portfolio slide 5">
+          <picture><img src="assets/images/image 32.svg" alt="Project 5"></picture>
+          <button class="preview-btn" type="button" aria-haspopup="dialog">PREVIEW</button>
+          <div class="card-title">Festival Activation</div>
+        </div>
+
+
+        <div class="slide" data-video="https://www.youtube.com/embed/9gKEgotimp4?autoplay=1&rel=0" role="group" aria-label="Portfolio slide 6">
+          <picture><img src="assets/images/image 33.svg" alt="Project 6"></picture>
+          <button class="preview-btn" type="button" aria-haspopup="dialog">PREVIEW</button>
+          <div class="card-title">Retail Experience</div>
+        </div>
+      </div>
+
+      <!-- dots -->
+      <div class="carousel-controls" id="portfolioDots" aria-hidden="false" role="tablist"></div>
+    </div>
+
+    <div style="text-align:center; margin-top:2rem;">
+      <p style="margin:0 auto; max-width:900px; color:#666; line-height:1.6; font-size:1rem;">Have an idea in mind? We’ll bring it to life. Need inspiration? Check out our top transformations — click PREVIEW to watch the reel.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="portfolioModal" aria-hidden="true" role="dialog" aria-modal="true">
+  <div class="modal" role="document">
+    <div class="modal-head">
+      <h3 id="modalTitle">Preview</h3>
+      <button class="close-btn" id="modalClose" aria-label="Close preview">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="modalMediaContainer"></div>
+    </div>
+  </div>
+</div>
+
+  <!-- Alternating features - kept structure and inline styles -->
+
+  <!--  -->
+<style>
+/* Make only the blue background full width */
+
+/* .fullwidth-bg {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: #230FBF !important; 
+}
+ */
+
+
+
+  @media (max-width: 768px) {
+  /* all alternating feature rows stack with image first */
+  #headshots {
+    grid-template-columns: 1fr !important;
+    text-align: center;
+    padding: 2rem 1rem !important;
+  }
+
+  #headshots .thumb {
+    order: -1; /* image first */
+    margin-bottom: 1rem;
+  }
+
+  #headshots h2 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+
+  #headshots p {
+    font-size: 1rem;
+  }
+
+  #headshots a {
+    width: 100%;
+    max-width: 300px;
+    margin-inline: auto;
+  }
+}
+
+
+</style>
+
+
+
+
+
+
+  <section>
+    <div class="container grid">
+   
+      <!-- 1 -->
+
+      <div id="headshots" class="fullwidth-bg" style="display:grid; grid-template-columns:1.1fr 1fr; gap:1.6rem; align-items:center; background:#230FBF; color:#fff; padding:3.5rem;">
+        <div class="thumb" style="position:relative; overflow:visible; background:#F5F5FA; border:3px solid rgba(255,255,255,0.15); box-shadow:0 6px 24px rgba(0,0,0,0.15); padding:4px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; overflow:hidden;">
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5; border-right:3px solid #fff;"><img src="assets/images/image 36.svg" alt="Before headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5;border-right:2px solid #fff;"><img src="assets/images/image 37.svg" alt="After headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+          </div>
+          <div style="position:absolute; left:50%; bottom:0; transform:translate(-50%, 50%); width:88px; height:88px; border-radius:50%; overflow:hidden; border:5px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.3); background:#E6E6F3; z-index:10;"><img src="assets/images/Ellipse 1.svg" alt="Sample subject" style="width:100%; height:100%; object-fit:cover;"></div>
+        </div>
+
+        <div>
+          <h2 style="margin:0 0 .4rem 0; font-size:clamp(1.4rem,2.5vw,2rem); font-weight:800;">AI-Generated Headshots</h2>
+          <p style="margin:.3rem 0 1.2rem 0; opacity:.95; line-height:1.6;">Transform your image with hyper-realistic, AI-crafted portraits designed to match any vibe, background, or professional look.</p>
+          <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:.9rem 1.4rem; border-radius:999px; background:linear-gradient(90deg,#4015C2 0%, #9F27CE 100%); color:#fff; font-weight:700; letter-spacing:.3px; text-decoration:none; box-shadow:0 6px 18px rgba(79,33,181,.35); transition:all 0.3s ease;">TRY IT NOW</a>
+        </div>
+      </div>
+
+
+
+      <!-- other alternating sections follow similarly... (kept your content) -->
+      <!-- For brevity I have preserved remaining sections as provided; they already respond to the global breakpoints -->
+
+
+
+<!-- 2 -->
+  <div id="headshots" 
+     style="display:grid; grid-template-columns:1fr 1.1fr; gap:1.6rem; align-items:center; background:white; color:#111; padding:3.5rem;">
+
+ <div>
+    <h2 style="margin:0 0 .4rem 0; font-size:clamp(1.4rem,2.5vw,2rem); font-weight:800; color:#111;">
+      AI Superhero Generator
+    </h2>
+    <p style="margin:.3rem 0 1.2rem 0; line-height:1.6; color:#222;">
+     Transform your audience into their ultimate “super selves” — complete with poses, settings, and styles that reflect your brand’s unique power and personality.
+    </p>
+    <a href="#" 
+       style="display:inline-flex; align-items:center; justify-content:center; padding:.9rem 1.4rem; border-radius:999px; background:linear-gradient(90deg,#4015C2 0%, #9F27CE 100%); color:#fff; font-weight:700; letter-spacing:.3px; text-decoration:none; box-shadow:0 6px 18px rgba(79,33,181,.35); transition:all 0.3s ease;">
+      TRY IT NOW
+    </a>
+  </div>
+
+        <div class="thumb" style="position:relative; overflow:visible; background:#F5F5FA; border:3px solid rgba(255,255,255,0.15); box-shadow:0 6px 24px rgba(0,0,0,0.15); padding:4px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; overflow:hidden;">
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5; border-right:3px solid #fff;"><img src="assets/images/image 36.svg" alt="Before headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5;border-right:2px solid #fff;"><img src="assets/images/image 37.svg" alt="After headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+          </div>
+          <div style="position:absolute; left:50%; bottom:0; transform:translate(-50%, 50%); width:88px; height:88px; border-radius:50%; overflow:hidden; border:5px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.3); background:#E6E6F3; z-index:10;"><img src="assets/images/Ellipse 1.svg" alt="Sample subject" style="width:100%; height:100%; object-fit:cover;"></div>
+        </div>
+      </div>
+
+
+
+      <!-- 3 -->
+        <div id="headshots" style="display:grid; grid-template-columns:1.1fr 1fr; gap:1.6rem; align-items:center; background:#230FBF; color:#fff; padding:3.5rem;">
+        <div class="thumb" style="position:relative; overflow:visible; background:#F5F5FA; border:3px solid rgba(255,255,255,0.15); box-shadow:0 6px 24px rgba(0,0,0,0.15); padding:4px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; overflow:hidden;">
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5; border-right:3px solid #fff;"><img src="assets/images/image 36.svg" alt="Before headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5;border-right:2px solid #fff;"><img src="assets/images/image 37.svg" alt="After headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+          </div>
+          <div style="position:absolute; left:50%; bottom:0; transform:translate(-50%, 50%); width:88px; height:88px; border-radius:50%; overflow:hidden; border:5px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.3); background:#E6E6F3; z-index:10;"><img src="assets/images/Ellipse 1.svg" alt="Sample subject" style="width:100%; height:100%; object-fit:cover;"></div>
+        </div>
+
+        <div>
+          <h2 style="margin:0 0 .4rem 0; font-size:clamp(1.4rem,2.5vw,2rem); font-weight:800;">AI Time Machine</h2>
+          <p style="margin:.3rem 0 1.2rem 0; opacity:.95; line-height:1.6;">Take your audience on a visual journey — from vintage eras to futuristic worlds, or even age transformations that reveal younger or older versions of themselves.</p>
+          <a href="#" style="display:inline-flex; align-items:center; justify-content:center; padding:.9rem 1.4rem; border-radius:999px; background:linear-gradient(90deg,#4015C2 0%, #9F27CE 100%); color:#fff; font-weight:700; letter-spacing:.3px; text-decoration:none; box-shadow:0 6px 18px rgba(79,33,181,.35); transition:all 0.3s ease;">TRY IT NOW</a>
+        </div>
+      </div>
+
+      <!-- 4 -->
+
+  <div id="headshots" 
+     style="display:grid; grid-template-columns:1fr 1.1fr; gap:1.6rem; align-items:center; background:white; color:#111; padding:3.5rem;">
+
+ <div>
+    <h2 style="margin:0 0 .4rem 0; font-size:clamp(1.4rem,2.5vw,2rem); font-weight:800; color:#111;">
+      AI Caricature Generator
+    </h2>
+    <p style="margin:.3rem 0 1.2rem 0; line-height:1.6; color:#222;">
+      AI portraits are meant to be fun — think artistic styles, caricatures, bobblehead makeovers, and cartoons for a lighthearted twist.
+    </p>
+    <a href="#" 
+       style="display:inline-flex; align-items:center; justify-content:center; padding:.9rem 1.4rem; border-radius:999px; background:linear-gradient(90deg,#4015C2 0%, #9F27CE 100%); color:#fff; font-weight:700; letter-spacing:.3px; text-decoration:none; box-shadow:0 6px 18px rgba(79,33,181,.35); transition:all 0.3s ease;">
+      TRY IT NOW
+    </a>
+  </div>
+
+        <div class="thumb" style="position:relative; overflow:visible; background:#F5F5FA; border:3px solid rgba(255,255,255,0.15); box-shadow:0 6px 24px rgba(0,0,0,0.15); padding:4px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0; overflow:hidden;">
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5; border-right:3px solid #fff;"><img src="assets/images/image 36.svg" alt="Before headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+            <picture style="display:block; overflow:hidden; background:#0E0E2A; aspect-ratio:4/5;border-right:2px solid #fff;"><img src="assets/images/image 37.svg" alt="After headshot" style="width:100%; height:100%; object-fit:cover;"></picture>
+          </div>
+          <div style="position:absolute; left:50%; bottom:0; transform:translate(-50%, 50%); width:88px; height:88px; border-radius:50%; overflow:hidden; border:5px solid #fff; box-shadow:0 8px 24px rgba(0,0,0,0.3); background:#E6E6F3; z-index:10;"><img src="assets/images/Ellipse 1.svg" alt="Sample subject" style="width:100%; height:100%; object-fit:cover;"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+ <!-- Contact (responsive) -->
+<section id="contact" class="contact-section" aria-labelledby="contact-heading">
+  <div class="container contact-grid">
+    <!-- LEFT: content / CTA -->
+    <div class="left" role="article">
+      <a href="#home" class="pill" style="text-decoration:none; color:#111; background:#fff; padding:.55rem .9rem; border-radius:999px; font-weight:700; font-size:.78rem; box-shadow:0 6px 18px rgba(0,0,0,0.08); letter-spacing:.6px;">REQUEST FREE TRIAL</a>
+
+      <h2 id="contact-heading">Get In Touch With Us</h2>
+
+      <p>We’ll review your request and respond via email. The more information you give, the better support we can offer!</p>
+      <p>Bringing smiles and unforgettable moments to life through AI-powered experiences.</p>
+
+      <a href="#read-more" class="btn ghost" style="display:inline-block; margin-top:12px; padding:.7rem 1.1rem; border-radius:28px; background:linear-gradient(90deg,#6A2DF0 0%, #C552E6 100%); color:#fff; font-weight:700; text-decoration:none; box-shadow:0 10px 24px rgba(106,45,240,0.16);">READ MORE</a>
+    </div>
+
+    <!-- FORM CARD (placed first on mobile for UX) -->
+    <div class="form-card" role="region" aria-labelledby="contact-form-heading">
+      <div class="form-head" id="contact-form-heading">Get In Touch</div>
+
+      <div class="form-body">
+        <form id="contactForm" method="post" action="#" novalidate>
+          <div class="row-2" style="margin-bottom:.75rem;">
+            <div>
+              <label for="first">First Name</label>
+              <input id="first" name="first" type="text" placeholder="First name" required>
+            </div>
+            <div>
+              <label for="last">Last Name</label>
+              <input id="last" name="last" type="text" placeholder="Last name" required>
+            </div>
+          </div>
+
+          <div style="margin-bottom:.75rem;">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" required>
+          </div>
+
+          <div style="margin-bottom:1rem;">
+            <label for="msg">Message</label>
+            <textarea id="msg" name="message" placeholder="Tell us about your event..." required></textarea>
+          </div>
+
+          <button class="btn full" type="submit">TRY DEMO</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+  <!-- Blog -->
+  <section aria-labelledby="blog-heading">
+    <div class="container">
+      <div class="section-title" style="display:flex; flex-direction:column; align-items:center; row-gap:20px;">
+        <span class="pill" style="display:inline-block; background:#ffffff; color:#111; padding:.38rem .8rem; border-radius:999px; font-weight:700; font-size:.78rem; letter-spacing:.4px; box-shadow:0 8px 18px rgba(0,0,0,0.32); border:1px solid rgba(0,0,0,0.06);">LATEST NEWS</span>
+        <h2 id="blog-heading" style="margin:0; font-size:1.95rem; line-height:1.06; color:#111; font-weight:700;">From The Blog</h2>
+      </div>
+
+      <div class="blog" style="margin-top:2rem;">
+        <article class="post"><picture><img src="assets/images/Rectangle 28.svg" alt="Blog cover 1"></picture><div class="body"><p>Podcasting operational change management inside of workflows to establish a…</p><a class="read" href="#">READ MORE</a></div></article>
+        <article class="post"><picture><img src="assets/images/Rectangle 29.svg" alt="Blog cover 2"></picture><div class="body"><p>Podcasting operational change management inside of workflows to establish a…</p><a class="read" href="#">READ MORE</a></div></article>
+        <article class="post"><picture><img src="assets/images/Rectangle 30.svg" alt="Blog cover 3"></picture><div class="body"><p>Podcasting operational change management inside of workflows to establish a…</p><a class="read" href="#">READ MORE</a></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA box -->
+  <section>
+    <div class="container cta-box">
+      <br>
+      <span class="pill" style="display:inline-block; margin-bottom:.4rem">UNLIMITED ACCESS FOR $49</span>
+      <h2>Start Your Business With AI?</h2>
+      <p>It’s like having access to a team of experienced writers producing powerful content for you in one click.</p>
+      <a class="btn" href="#">FIND MORE</a>
+      <br>
+      <br>
+    </div>
+  </section>
+
+
+<!-- ===== Footer (responsive) ===== -->
+<style>
+/* Footer core */
+.site-footer {
+  background: var(--brand-dark, #230FBF);
+  color: #fff;
+  padding-top: 2rem;
+  padding-bottom: 1rem;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Outer container aligns with your .container sizing */
+.site-footer .container {
+  width: min(1200px, 94vw);
+  margin: 0 auto;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* grid layout */
+.site-footer .foot {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1.4rem;
+  padding: 1.2rem 0 1.6rem 0;
+  align-items: start;
+}
+
+/* brand column */
+.footer-brand .brand { display:flex; align-items:center; gap:10px; font-weight:700; color:#fff; }
+.footer-brand .logo img { width:36px; height:auto; display:block; }
+.footer-brand .brand-title { font-size:18px; font-weight:800; }
+.footer-brand .muted { margin:0; color: rgba(255,255,255,0.92); font-size:14px; line-height:1.5; margin-top:6px; }
+
+/* social icons */
+.social { display:flex; gap:.6rem; margin-top:.8rem; align-items:center; }
+.social-link {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  background: #fff;
+  border-radius:8px;            /* square-ish pill to match ref */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  overflow:hidden;
+  border: 0;
+  text-decoration:none;
+}
+.social-link img { width:18px; height:18px; display:block; object-fit:contain; }
+
+/* Footer columns */
+.footer-col h4 { margin:.25rem 0 .6rem 0; color:#fff; font-size:1rem; font-weight:700; }
+.footer-col a { color: rgba(255,255,255,0.92); text-decoration:none; display:inline-block; margin:6px 0; font-size:.95rem; line-height:1.6; }
+.footer-col p.muted { color: rgba(255,255,255,0.9); margin:0 0 .6rem 0; }
+
+/* app-badge */
+.app-badge { max-width:150px; display:block; margin-top:6px; }
+
+/* bottom row */
+.footer-bottom { padding:1rem 0; border-top: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); font-size:0.95rem; text-align:left; }
+
+/* small screens: stack vertically, center content like reference image */
+@media (max-width:900px){
+  .site-footer .foot { grid-template-columns: 1fr 1fr; gap:1rem; padding: 1rem 0; }
+  .footer-brand { order: 0; }
+  .footer-col { order: 1; }
+}
+
+@media (max-width:560px){
+  .site-footer .foot {
+    grid-template-columns: 1fr;
+    text-align: left;
+    padding: .9rem 0;
+  }
+
+  .footer-brand .brand { gap:8px; justify-content:flex-start; }
+  /* center brand & social like your reference image's mobile behavior */
+  .footer-brand { text-align:left; padding-bottom: .6rem; }
+  .footer-brand .muted { text-align:left; }
+
+  /* Social row becomes a small inline list centered under the brand */
+  .social { justify-content:flex-start; margin-top:.5rem; }
+
+  .footer-col { padding-top:.6rem; border-top: 1px solid rgba(255,255,255,0.03); }
+
+  .footer-bottom { text-align:center; padding-top:0.8rem; }
+}
+
+/* Accessibility: focus state for keyboard users */
+.social-link:focus { outline: 3px solid rgba(255,255,255,0.24); outline-offset: 2px; border-radius:8px; }
+.footer-col a:focus { outline: 3px solid rgba(255,255,255,0.12); outline-offset: 2px; }
+
+
+
+
+/* MOBILE: keep header/menu and footer aligned with page container padding */
+@media (max-width: 700px) {
+  /* 1) Mobile menu panel: match the page container padding and avoid full-bleed */
+  .menu-panel {
+    box-sizing: border-box;
+    left: 12px;              /* same as .container padding */
+    right: 12px;             /* keep same right gap */
+    width: auto;             /* don't force full width */
+    padding: 12px;           /* internal padding for menu items */
+    border-radius: 12px;
+  }
+
+  /* If you want the menu button & brand to also sit with the container padding */
+  .nav { padding-left: 12px; padding-right: 12px; }
+
+  /* 2) Footer: preserve the container padding so content doesn't touch the left edge */
+  .site-footer .container {
+    padding-left: 12px;     /* same as .container global */
+    padding-right: 12px;
+    box-sizing: border-box;
+  }
+
+  /* If the footer background is full-bleed but inner content should be inset */
+  .site-footer .foot {
+    padding-left: 0;        /* internal region already padded by container */
+    padding-right: 0;
+  }
+
+  /* Optional: slightly reduce brand spacing on very small widths */
+  @media (max-width: 420px) {
+    .nav { padding-left: 10px; padding-right: 10px; }
+    .menu-panel { left:10px; right:10px; padding:10px; }
+    .site-footer .container { padding-left:10px; padding-right:10px; }
+  }
+}
+
+
+
+
+
+</style>
+
+<footer class="site-footer" aria-labelledby="footer-heading">
+  <div class="container foot" role="contentinfo">
+
+    <!-- Brand / intro -->
+    <div class="footer-brand">
+      <div class="brand" aria-hidden="false" style="margin-bottom:.25rem;">
+        <span class="logon" aria-hidden="true">
+          <picture>
+            <!-- replace path if your logo is in a different folder -->
+            <!-- <img src="icons/ssssss.png" alt="" style="width:50px; height:auto; display:block;"> -->
+            <!-- <img src="icons/ssssss.png" alt="Logo" style="background:none; height:50px; width:auto; border:none;"> -->
+                            <img src="icons/white logo.png" alt="Logo" style=" height:50px; width: 50px;">
+
+          </picture>
+        </span>
+        <span class="brand-title">AI Photo Booth</span>
+      </div>
+
+      <p class="muted">AI is the leader in Value-Driven AI – a unique and collaborative approach.</p>
+
+      <div class="social" aria-label="Social links" role="navigation">
+        <a href="#" aria-label="Instagram" class="social-lin">
+          <img src="icons/Vector (11).svg" alt="Instagram icon">
+          
+        </a>
+        <a href="#" aria-label="LinkedIn" class="social-lin">
+          <img src="icons/Vector (8).svg" alt="LinkedIn icon">
+        </a>
+        <a href="#" aria-label="X" class="social-lin">
+          <img src="icons/Vector (7).svg" alt="X icon">
+        </a>
+        <a href="#" aria-label="Facebook" class="social-lin">
+          <img src="icons/Vector (10).svg" alt="Facebook icon">
+        </a>
+      </div>
+    </div>
+
+    <!-- Links columns -->
+    <div class="footer-col">
+      <h4>Solutions</h4>
+      <nav aria-label="Solutions">
+        <a href="#">Predictive Modelling</a><br>
+        <a href="#">AI Rewriter</a><br>
+        <a href="#">AI Text Completer</a><br>
+        <a href="#">AI Image Generator</a>
+      </nav>
+    </div>
+
+    <div class="footer-col">
+      <h4>About</h4>
+      <nav aria-label="About">
+        <a href="#">About Our Company</a><br>
+        <a href="#">Focus On Solutions</a><br>
+        <a href="#">Assuring Our Best Services</a><br>
+        <a href="#">Meet Our Professional Team</a>
+      </nav>
+    </div>
+
+    <div class="footer-col">
+      <h4>Get Our App</h4>
+      <p class="muted">We have a dedicated team of specialists for you.</p>
+      <picture><img src="assets/images/image 20 (4).svg" alt="Get it on Google Play" class="app-badge"></picture>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <small>&copy; <span id="y"></span> AI Photo Booth. All rights reserved.</small>
+  </div>
+</footer>
+
+
+
+
+
+
+
+
+
+<script>
+(function(){
+  // Elements
+  const toggle = document.getElementById('menu-toggle');
+  const panel = document.getElementById('menu-panel');
+  if (!toggle || !panel) return;
+
+  // Create overlay element
+  let overlay = document.createElement('div');
+  overlay.className = 'menu-overlay';
+  document.body.appendChild(overlay);
+
+  // Add a close button inside panel for convenience
+  let closeBtn = document.createElement('button');
+  closeBtn.className = 'close-btn';
+  closeBtn.innerHTML = '✕';
+  closeBtn.setAttribute('aria-label','Close menu');
+  panel.insertBefore(closeBtn, panel.firstChild);
+
+  // Utility: find the page .container and set the panel left/width to match it
+  function alignPanelToContainer() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+
+    // We want the panel to be placed where the .container is (left edge).
+    panel.style.left = `${rect.left}px`;
+    panel.style.width = `${Math.min(rect.width, window.innerWidth - 24)}px`;
+  }
+
+  // Open / close helpers
+  function openMenu() {
+    alignPanelToContainer();
+    panel.classList.add('show');
+    overlay.classList.add('show');
+    toggle.setAttribute('aria-expanded','true');
+    panel.setAttribute('aria-hidden','false');
+    document.body.classList.add('no-scroll-menu'); // optional: lock body if you want
+    // bind scroll listener to auto-close
+    window.addEventListener('scroll', handleAutoClose, {passive:true});
+  }
+  function closeMenu() {
+    panel.classList.remove('show');
+    overlay.classList.remove('show');
+    toggle.setAttribute('aria-expanded','false');
+    panel.setAttribute('aria-hidden','true');
+    document.body.classList.remove('no-scroll-menu');
+    window.removeEventListener('scroll', handleAutoClose);
+  }
+
+  // Toggle button
+  toggle.addEventListener('click', function(e){
+    e.stopPropagation();
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    if (expanded) closeMenu(); else openMenu();
+  });
+
+  // overlay click closes
+  overlay.addEventListener('click', closeMenu);
+
+  // close button inside panel
+  closeBtn.addEventListener('click', closeMenu);
+
+  // close on Escape key
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  // auto close on scroll (only when panel is open)
+  function handleAutoClose() {
+    // small debounce: if user scrolls more than 10px then close
+    closeMenu();
+  }
+
+  // On resize or orientation change, re-align panel
+  window.addEventListener('resize', function(){
+    if (panel.classList.contains('show')) alignPanelToContainer();
+  });
+
+  // ensure initial ARIA state
+  toggle.setAttribute('aria-expanded', 'false');
+  panel.setAttribute('aria-hidden', 'true');
+
+  // optional: close when a menu link inside panel is clicked (so navigating will hide it)
+  panel.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (a) {
+      // small delay to let anchor activate
+      setTimeout(closeMenu, 80);
+    }
+  });
+
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="scripts.js"></script>
+
+
+</body>
+</html>

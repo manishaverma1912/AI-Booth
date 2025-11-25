@@ -1,0 +1,97 @@
+
+
+
+<script>
+(function(){
+  // Elements
+  const toggle = document.getElementById('menu-toggle');
+  const panel = document.getElementById('menu-panel');
+  if (!toggle || !panel) return;
+
+  // Create overlay element
+  let overlay = document.createElement('div');
+  overlay.className = 'menu-overlay';
+  document.body.appendChild(overlay);
+
+  // Add a close button inside panel for convenience
+  let closeBtn = document.createElement('button');
+  closeBtn.className = 'close-btn';
+  closeBtn.innerHTML = '✕';
+  closeBtn.setAttribute('aria-label','Close menu');
+  panel.insertBefore(closeBtn, panel.firstChild);
+
+  // Utility: find the page .container and set the panel left/width to match it
+  function alignPanelToContainer() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+
+    // We want the panel to be placed where the .container is (left edge).
+    panel.style.left = `${rect.left}px`;
+    panel.style.width = `${Math.min(rect.width, window.innerWidth - 24)}px`;
+  }
+
+  // Open / close helpers
+  function openMenu() {
+    alignPanelToContainer();
+    panel.classList.add('show');
+    overlay.classList.add('show');
+    toggle.setAttribute('aria-expanded','true');
+    panel.setAttribute('aria-hidden','false');
+    document.body.classList.add('no-scroll-menu'); // optional: lock body if you want
+    // bind scroll listener to auto-close
+    window.addEventListener('scroll', handleAutoClose, {passive:true});
+  }
+  function closeMenu() {
+    panel.classList.remove('show');
+    overlay.classList.remove('show');
+    toggle.setAttribute('aria-expanded','false');
+    panel.setAttribute('aria-hidden','true');
+    document.body.classList.remove('no-scroll-menu');
+    window.removeEventListener('scroll', handleAutoClose);
+  }
+
+  // Toggle button
+  toggle.addEventListener('click', function(e){
+    e.stopPropagation();
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    if (expanded) closeMenu(); else openMenu();
+  });
+
+  // overlay click closes
+  overlay.addEventListener('click', closeMenu);
+
+  // close button inside panel
+  closeBtn.addEventListener('click', closeMenu);
+
+  // close on Escape key
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  // auto close on scroll (only when panel is open)
+  function handleAutoClose() {
+    // small debounce: if user scrolls more than 10px then close
+    closeMenu();
+  }
+
+  // On resize or orientation change, re-align panel
+  window.addEventListener('resize', function(){
+    if (panel.classList.contains('show')) alignPanelToContainer();
+  });
+
+  // ensure initial ARIA state
+  toggle.setAttribute('aria-expanded', 'false');
+  panel.setAttribute('aria-hidden', 'true');
+
+  // optional: close when a menu link inside panel is clicked (so navigating will hide it)
+  panel.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (a) {
+      // small delay to let anchor activate
+      setTimeout(closeMenu, 80);
+    }
+  });
+
+})();
+</script>

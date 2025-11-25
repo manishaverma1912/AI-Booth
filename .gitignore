@@ -1,0 +1,30 @@
+# Node
+node_modules/
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+
+# system files
+Thumbs.db
+
+# Ignore downloads and personal files accidentally copied
+Downloads/
+
+# Built apps
+dist/
+
+# Ignore typical temp files
+*.log
+*.tmp
+assets/videos/*.mp4
